@@ -66,7 +66,7 @@ DATABASE_DIR = path(HOME_DIR, 'db')
 DATABASE_NAME = path(DATABASE_DIR, 'biostar.db')
 TEMPLATE_DIR = path(HOME_DIR, 'main', 'templates')
 STATIC_DIR = path(HOME_DIR, 'static')
-EXPORT_DIR = path(HOME_DIR, '..', 'apache', 'export')
+EXPORT_DIR = path(HOME_DIR, '..', 'export')
 WHOOSH_INDEX = path(HOME_DIR, 'db', 'index')
 PLANET_DIR = path(HOME_DIR, 'db', 'planet')
 
@@ -200,7 +200,7 @@ CACHES = {
     }
 }
 
-#SESSION_ENGINE = "django.contrib.sessions.backends.cache" 
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 ROOT_URLCONF = 'main.urls'
 
