@@ -200,8 +200,6 @@ CACHES = {
     }
 }
 
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-
 ROOT_URLCONF = 'main.urls'
 
 TEMPLATE_DIRS = [
