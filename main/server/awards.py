@@ -15,6 +15,10 @@ def create(request, user, badge):
     sender = models.User.objects.get(pk=1)
     award = models.Award.objects.create(user=user, badge=badge)
     text = notegen.awardnote(award.badge)
+    
+    # Use this (instead of next line) to enable email notifications
+    #note = models.send_note(sender=sender, target=user, content=text, type=NOTE_AWARD, url=award.badge.get_absolute_url(), send_email=True)
+    
     note = models.Note.objects.create(sender=sender, target=user, content=text, url=award.badge.get_absolute_url() )
     messages.info(request, note.html)
 

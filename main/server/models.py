@@ -558,15 +558,21 @@ def post_moderate(request, post, user, status, date=None):
     return url
 
 @transaction.commit_on_success
-def send_note(sender, target, content, type=NOTE_USER, unread=True, date=None, both=False, url=''):
+def send_note(sender, target, content, type=NOTE_USER, unread=True, date=None, both=False, url='', send_email=False):
     "Sends a note to target"
     date = date or datetime.now()
     url = url[:200]
-    Note.objects.create(sender=sender, target=target, content=content, type=type, unread=unread, date=date, url=url)
+    note = Note.objects.create(sender=sender, target=target, content=content, type=type, unread=unread, date=date, url=url)
+
+    # TODO incorporate here logic for checking of WATCH by users regarding events.
+    if send_email:
+        tasks.send_email_note(sender=sender, target=target, content=content, type=type, date=date, url=url)
+
     both = both and (sender != target)
     if both:
         #send a note to the sender as well
         Note.objects.create(sender=sender, target=sender, content=content, type=type, unread=False, date=date, url=url)
+    return note
 
 def decorate_posts(posts, user):
     """
@@ -644,7 +650,16 @@ def post_create_notification(post):
 
     for target in authors:
         unread = (target != post.author) # the unread flag will be off for the post author
-        send_note(sender=post.author, target=target, content=text, type=NOTE_USER, unread=unread, date=post.creation_date, url=post.get_absolute_url() )
+        
+        send_email = False
+        # get the true root of this post, check whether it is bookmarked
+        if unread: # not to the post author
+            bookmark_root = post.parent
+            votes = Vote.objects.filter(author=target, post=bookmark_root, type=VOTE_BOOKMARK)
+            if len(votes)>0:
+                send_email = True
+        
+        send_note(sender=post.author, target=target, content=text, type=NOTE_USER, unread=unread, date=post.creation_date, url=post.get_absolute_url(), send_email=send_email )
 
 
 class Note(models.Model):

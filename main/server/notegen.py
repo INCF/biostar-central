@@ -1,3 +1,5 @@
+from server.const import *
+
 """
 This module can generate messages
 """
@@ -43,3 +45,11 @@ def awardnote(badge):
 def private_message(user, target, text):
     text = "%s by %s" % (userlink(user), text)
     return text
+
+def email_subject(type):
+    if type == NOTE_USER:
+        return "NeuroStars.org: Activity in a bookmarked question"
+    elif type == NOTE_MODERATOR:
+        return "NeuroStars.org: Moderator activity on one of your contributions"
+    else:
+        return "NeuroStars.org: Email alert"
