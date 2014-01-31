@@ -1,9 +1,11 @@
 from server.const import *
+from main.server.const import *
+from django.conf import settings
 
 """
 This module can generate messages
 """
-from main.server.const import *
+
 
 def userlink(user, short=False):
     if short:
@@ -35,7 +37,7 @@ def chop(text, size):
     return text if len(text) < size else '%s...' % text[:size]
     
 def post_action(user, post, size=250):
-    text   = '%s by %s : %s' % (postlink(post), userlink(user, short=False), chop(post.content, size=size))
+    text   = '%s by %s: %s' % (postlink(post), userlink(user, short=False), chop(post.content, size=size))
     return text
 
 def awardnote(badge):
@@ -47,9 +49,16 @@ def private_message(user, target, text):
     return text
 
 def email_subject(type):
+
+    # Get name from settings, if not set use domain
+    try:
+        name = settings.SITE_NAME
+    except AttributeError:
+        name = settings.SITE_DOMAIN
+    
     if type == NOTE_USER:
-        return "NeuroStars.org: Activity in a bookmarked question"
+        return name + ": Activity in a bookmarked question"
     elif type == NOTE_MODERATOR:
-        return "NeuroStars.org: Moderator activity on one of your contributions"
+        return name + ": Moderator activity on one of your contributions"
     else:
-        return "NeuroStars.org: Email alert"
+        return name + "NeuroStars.org: Email alert"
