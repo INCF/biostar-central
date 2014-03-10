@@ -9,3 +9,7 @@ django_pipeline
 django_markwhat
 django_debug_toolbar
 django_browserid
+django-openid-auth
+django_compressor
+python-openid
+
