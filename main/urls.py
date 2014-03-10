@@ -193,6 +193,11 @@ urlpatterns += patterns('',
     url(r'^admin/', include(admin.site.urls), name='admin'),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls'), name='admin-docs'),
 )
+# Django Debug Toolbar urls, using explicit setup:
+# http://django-debug-toolbar.readthedocs.org/en/1.0/installation.html#explicit-setup
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += patterns('', url(r'^__debug__/', include(debug_toolbar.urls)), )
 
 urlpatterns += staticfiles_urlpatterns()
 
