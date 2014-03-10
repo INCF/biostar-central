@@ -194,6 +194,8 @@ BROKER_URL = 'django://'
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
+# Not auto adjust settings for Debug toolbar.
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
 
 CACHES = {
     'default': {
