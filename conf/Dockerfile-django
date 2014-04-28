@@ -1,6 +1,6 @@
 FROM ubuntu:14.04
 
-# Install python, pip, git, postgresql client.
+# Install python, pip, postgresql client.
 RUN apt-get update
 RUN apt-get install -y python python-pip postgresql-client-9.3 python-psycopg2
 
