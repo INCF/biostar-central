@@ -1,0 +1,17 @@
+FROM ubuntu:14.04
+
+# Install python, pip, git, postgresql client.
+RUN apt-get update
+RUN apt-get install -y python python-pip git postgresql-client-9.3 python-psycopg2
+
+# Create a password file for PostgreSQL.
+RUN echo "*:*:*:docker:docker" > /root/.pgpass
+RUN chmod 0600 /root/.pgpass
+
+# Expose the PostgreSQL port.
+EXPOSE 8000
+
+# Launch Django when starting the container.
+ENV BIOSTAR_HOME /root/biostar
+WORKDIR root/biostar
+CMD ["./biostar.sh", "docker_dev"]
