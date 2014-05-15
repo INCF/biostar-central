@@ -140,6 +140,41 @@ while (( "$#" )); do
         $PYTHON $DJANGO_ADMIN import_biostar1 -u -p -x
     fi
 
+    if [ "$1" = "docker_dev" ]; then
+        echo " * Installing requirements..."
+        pip install -r conf/requirements/base.txt
+
+        echo " * Setting environment variables..."
+        source conf/defaults.env
+        source conf/local.env
+
+        echo " * Creating the database..."
+        set +e
+        createdb -h $PG_PORT_5432_TCP_ADDR -p $PG_PORT_5432_TCP_PORT -U docker $DATABASE_NAME
+        res=`echo $?`
+        # If:
+        # res = 1 then the DB did already exist
+        # res = 0 then the DB has just been created
+
+        echo " * Migrating the database..."
+        python manage.py syncdb -v 1 --noinput
+        python manage.py migrate biostar.apps.users
+        python manage.py migrate biostar.apps.posts
+        python manage.py migrate
+
+        if [ "$res" -eq 0 ]; then
+            echo " * Initializing the database..."
+            python manage.py initialize_site
+            python manage.py loaddata $JSON_DATA_FIXTURE
+            python manage.py rebuild_index --noinput
+        else
+            echo " * Skipping initialization of the database..."
+        fi
+
+        echo " * Running the server..."
+        python manage.py runserver 0.0.0.0:8000
+    fi
+
 
 shift
 done

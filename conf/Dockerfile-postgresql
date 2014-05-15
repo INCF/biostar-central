@@ -1,0 +1,28 @@
+FROM ubuntu:14.04
+
+# Install PostgreSQL 9.3.
+RUN apt-get update
+RUN apt-get install -y postgresql-9.3
+
+# Run the rest of the commands as the ``postgres`` user.
+USER postgres
+
+# Create a PostgreSQL role named ``docker`` with ``docker`` as the password and
+# then create a database ``docker`` owned by the ``docker`` role.
+RUN /etc/init.d/postgresql start &&\
+    psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';" &&\
+    createdb -O docker docker &&\
+    /etc/init.d/postgresql stop
+
+# Adjust PostgreSQL configuration so that remote connections to the
+# database are possible.
+RUN echo "host    all             docker          0.0.0.0/0               md5" >> /etc/postgresql/9.3/main/pg_hba.conf
+
+# And add ``listen_addresses`` to ``/etc/postgresql/9.3/main/postgresql.conf``.
+RUN sed -i -r "s/#listen_addresses = 'localhost'(.*)/listen_addresses = '*'\1/" /etc/postgresql/9.3/main/postgresql.conf
+
+# Expose PostgreSQL's port.
+EXPOSE 5432
+
+# Launch PostgreSQL when starting the container.
+CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresql/9.3/main", "-c", "config_file=/etc/postgresql/9.3/main/postgresql.conf"]
